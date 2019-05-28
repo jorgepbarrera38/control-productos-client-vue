@@ -8,12 +8,24 @@ Vue.use(VueRouter)
 
 const routes = [
     { path:'/login', name: 'login', component: Login },
-    { path:'/', component: Main, children: [
+    { path:'/', name: 'dashboard', component: Main, children: [
         { path:'products', name: 'products', component: Product },
     ]}
 ]
 
 
-export default new VueRouter({
+const router = new VueRouter({
     routes
 })
+
+router.beforeEach((to, from, next) => {
+    if (to.name == 'login' && localStorage.getItem('access_token')) {
+        next({ name: 'dashboard' })
+    } else if (!to.name == 'login' && !localStorage.getItem('access_token')) {
+        next({ name: 'login' })
+    } else {
+        next()
+    }
+})
+
+export default router
